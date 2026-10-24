@@ -1,14 +1,8 @@
-import express from "express";
+import "dotenv/config";
+import { app } from "./app.js";
 
-const app = express();
-const PORT = 3000;
-
-app.use(express.json());
-
-app.get("/health", (req, res) => {
-  res.json({ status: "OK" });
-});
+const PORT = Number(process.env.PORT) || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`API running on http://localhost:${PORT}`);
 });
