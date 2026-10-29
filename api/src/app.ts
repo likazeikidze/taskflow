@@ -1,9 +1,11 @@
 import express from "express";
 import { prisma } from "./lib/prisma.js";
+import { authRouter } from "./auth/auth.routes.js";
 
 export const app = express();
 
 app.use(express.json());
+app.use("/auth", authRouter);
 
 app.get("health", async (req, res) => {
   try {
