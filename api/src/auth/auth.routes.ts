@@ -4,6 +4,7 @@ import { registerSchema } from "./auth.schemas.js";
 import { loginSchema } from "./auth.schemas.js";
 import bcrypt from "bcryptjs";
 import { prisma } from "../lib/prisma.js";
+import { requireAuth } from "./requireAuth.js";
 
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -82,4 +83,23 @@ authRouter.post("/login", async (req, res) => {
   res.json({
     data: { user: { id: user.id, name: user.name, email: user.email }, token },
   });
+});
+
+authRouter.get("/me", requireAuth, async (req, res) => {
+  if (!req.userId) {
+    res.status(401).json({ error: "Unauthorized" });
+    return;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: req.userId },
+    select: { id: true, email: true, name: true },
+  });
+
+  if (!user) {
+    res.status(404).json({ error: "User not found" });
+    return;
+  }
+
+  res.status(200).json({ data: { user } });
 });
